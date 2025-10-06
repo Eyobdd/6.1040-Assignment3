@@ -1,41 +1,74 @@
-# DayPlanner 
-A simple day planner. This implementation focuses on the core concept of organizing activities for a single day with both manual and AI-assisted scheduling.
+# Gemini Schedule Demo
 
-## Concept: DayPlanner
+This repository demonstrates AI-augmented concepts using Google's Gemini API, including:
+- **DayPlanner**: Organize activities for a single day with manual and AI-assisted scheduling
+- **JournalEntries**: Daily structured journal entries with AI-powered weekly summaries (Assignment 3)
+## Concepts
+
+### Concept: JournalEntries (Assignment 3)
+
+**Purpose**: Preserve daily structured entries and add AI-powered weekly synthesis to aid reflection and next-week focus  
+**Principle**: Manual viewing/editing of per-day entries, with optional LLM-generated weekly summaries
+
+**Specifications**:
+- Original concept: [`./assignment-3/journal_entry.spec`](./assignment-3/journal_entry.spec)
+
+  _**Note:** This concept was refined to align with feed back on previous assignments(tagging was removed from this concept)_
+- AI-augmented concept: [`./assignment-3/journal_entry_ai.spec`](./assignment-3/journal_entry_ai.spec)
+
+#### Core State
+- **JournalEntry**: Daily entries with gratitude, didToday, proudOf, tomorrowPlan, rating (-2 to 2)
+- **WeeklySummary**: AI-generated weekly insights with computed stats (entryCount, avgRating, missingDays) and LLM-generated summary/focus
+
+#### Core Actions
+- `createEntry()` - Create a new journal entry for a specific date
+- `editEntry()` - Update fields of an existing entry
+- `deleteEntry()` - Remove an entry
+- `summarizeWeek()` - Generate AI-powered weekly summary using Gemini
+
+#### Key Features
+- **Deterministic aggregates**: Entry count, average rating, and missing days computed by code
+- **LLM synthesis**: Gemini generates concise summary (≤120 words) and focus suggestions to improve your week (≤60 words)
+- **Idempotent**: Re-running weekly summary updates (rather than duplicating) existing summary
+- **Strict JSON**: LLM output parsed as structured JSON for reliability
+
+---
+
+### Concept: DayPlanner
 
 **Purpose**: Help you organize activities for a single day  
 **Principle**: You can add activities one at a time, assign them to times, and then observe the completed schedule
 
-### Core State
+#### Core State
 - **Activities**: Set of activities with title, duration, and optional startTime
 - **Assignments**: Set of activity-to-time assignments
 - **Time System**: All times in half-hour slots starting at midnight (0 = 12:00 AM, 13 = 6:30 AM)
 
-### Core Actions
+#### Core Actions
 - `addActivity(title: string, duration: number): Activity`
 - `removeActivity(activity: Activity)`
 - `assignActivity(activity: Activity, startTime: number)`
 - `unassignActivity(activity: Activity)`
 - `requestAssignmentsFromLLM()` - AI-assisted scheduling with hardwired preferences
 
-## Prerequisites
+#### Prerequisites
 
 - **Node.js** (version 14 or higher)
 - **TypeScript** (will be installed automatically)
 - **Google Gemini API Key** (free at [Google AI Studio](https://makersuite.google.com/app/apikey))
 
-## Quick Setup
+#### Quick Setup
 
-### 0. Clone the repo locally and navigate to it
+#### 0. Clone the repo locally and navigate to it
 ```cd intro-gemini-schedule```
 
-### 1. Install Dependencies
+#### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Add Your API Key
+#### 2. Add Your API Key
 
 **Why use a template?** The `config.json` file contains your private API key and should never be committed to version control. The template approach lets you:
 - Keep the template file in git (safe to share)
@@ -60,40 +93,46 @@ cp config.json.template config.json
 3. Click "Create API Key"
 4. Copy the key and paste it into `config.json` (replacing `YOUR_GEMINI_API_KEY_HERE`)
 
-### 3. Run the Application
+#### 3. Run the Application
 
-**Run all test cases:**
+**Run JournalEntries (Assignment 3 - default):**
 ```bash
 npm start
 ```
 
-**Run specific test cases:**
+**Run DayPlanner test cases:**
 ```bash
-npm run manual    # Manual scheduling only
-npm run llm       # LLM-assisted scheduling only
-npm run mixed     # Mixed manual + LLM scheduling
+npm run dayplanner  # All DayPlanner tests
+npm run manual      # Manual scheduling only
+npm run llm         # LLM-assisted scheduling only
+npm run mixed       # Mixed manual + LLM scheduling
 ```
 
-## File Structure
+#### File Structure
 
 ```
-dayplanner/
-├── package.json              # Dependencies and scripts
-├── tsconfig.json             # TypeScript configuration
-├── config.json               # Your Gemini API key
-├── dayplanner-types.ts       # Core type definitions
-├── dayplanner.ts             # DayPlanner class implementation
-├── dayplanner-llm.ts         # LLM integration
-├── dayplanner-tests.ts       # Test cases and examples
-├── dist/                     # Compiled JavaScript output
-└── README.md                 # This file
+intro-gemini-schedule/
+├── package.json                  # Dependencies and scripts
+├── tsconfig.json                 # TypeScript configuration
+├── config.json                   # Your Gemini API key (gitignored)
+├── config.json.template          # Template for config.json
+├── gemini-llm.ts                 # Shared LLM integration
+├── journal-entries.ts            # JournalEntries concept implementation
+├── journal-entries-tests.ts      # JournalEntries test cases
+├── dayplanner.ts                 # DayPlanner concept implementation
+├── dayplanner-tests.ts           # DayPlanner test cases
+├── assignment-3/                 # Assignment 3 specifications
+│   ├── journal_entry.spec        # Original JournalEntries spec
+│   └── journal_entry_ai.spec     # AI-augmented spec
+├── dist/                         # Compiled JavaScript output
+└── README.md                     # This file
 ```
 
-## Test Cases
+#### Test Cases
 
 The application includes three comprehensive test cases:
 
-### 1. Manual Scheduling
+#### 1. Manual Scheduling
 Demonstrates adding activities and manually assigning them to time slots:
 
 ```typescript
@@ -102,7 +141,7 @@ const breakfast = planner.addActivity('Breakfast', 1); // 30 minutes
 planner.assignActivity(breakfast, 14); // 7:00 AM
 ```
 
-### 2. LLM-Assisted Scheduling
+#### 2. LLM-Assisted Scheduling
 Shows AI-powered scheduling with hardwired preferences:
 
 ```typescript
@@ -112,10 +151,10 @@ planner.addActivity('Math Homework', 4);
 await llm.requestAssignmentsFromLLM(planner);
 ```
 
-### 3. Mixed Scheduling
+#### 3. Mixed Scheduling
 Combines manual assignments with AI assistance for remaining activities.
 
-## Sample Output
+#### Sample Output
 
 ```
 📅 Daily Schedule
@@ -133,7 +172,7 @@ Combines manual assignments with AI assistance for remaining activities.
 All activities are assigned!
 ```
 
-## Key Features
+#### Key Features
 
 - **Simple State Management**: Activities and assignments stored in memory
 - **Flexible Time System**: Half-hour slots from midnight (0-47)
@@ -142,7 +181,7 @@ All activities are assigned!
 - **Conflict Detection**: Prevents overlapping activities
 - **Clean Architecture**: First principles implementation with no legacy code
 
-## LLM Preferences (Hardwired)
+#### LLM Preferences (Hardwired)
 
 The AI uses these built-in preferences:
 - Exercise activities: Morning (6:00 AM - 10:00 AM)
@@ -151,22 +190,22 @@ The AI uses these built-in preferences:
 - Social/Relaxation: Evenings (6:00 PM - 10:00 PM)
 - Avoid: Demanding activities after 10:00 PM
 
-## Troubleshooting
+#### Troubleshooting
 
-### "Could not load config.json"
+##### "Could not load config.json"
 - Ensure `config.json` exists with your API key
 - Check JSON format is correct
 
-### "Error calling Gemini API"
+##### "Error calling Gemini API"
 - Verify API key is correct
 - Check internet connection
 - Ensure API access is enabled in Google AI Studio
 
-### Build Issues
+##### Build Issues
 - Use `npm run build` to compile TypeScript
 - Check that all dependencies are installed with `npm install`
 
-## Next Steps
+#### Next Steps
 
 Try extending the DayPlanner:
 - Add weekly scheduling
@@ -176,7 +215,7 @@ Try extending the DayPlanner:
 - Add conflict resolution strategies
 - Implement recurring activities
 
-## Resources
+#### Resources
 
 - [Google Generative AI Documentation](https://ai.google.dev/docs)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)

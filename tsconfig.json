@@ -22,7 +22,10 @@
   "files": [
     "dayplanner.ts",
     "gemini-llm.ts",
-    "dayplanner-tests.ts"
+    "dayplanner-tests.ts",
+    "journal-entries.ts",
+    "journal-entries-tests.ts",
+    "journal-entries-scenarios.ts"
   ],
   "exclude": [
     "node_modules",
